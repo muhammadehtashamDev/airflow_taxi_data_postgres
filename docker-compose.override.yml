@@ -1,0 +1,21 @@
+services:
+  scheduler:
+    volumes:
+      - /data/warehouse/taxi_data/incoming:/opt/airflow/data/taxi_data/incoming
+      - /root/data-engineering/dbt/dbt_taxi_data_postgres:/opt/airflow/dbt/dbt_taxi_data_postgres
+
+    environment:
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://api-server:8080/airflow/execution/"
+
+  dag-processor:
+    volumes:
+      - /root/data-engineering/dbt/dbt_taxi_data_postgres:/opt/airflow/dbt/dbt_taxi_data_postgres
+
+  api-server:
+    ports:
+      - "0.0.0.0:8081:8080" 
+    volumes:
+      - /root/data-engineering/dbt/dbt_taxi_data_postgres:/opt/airflow/dbt/dbt_taxi_data_postgres
+    environment:
+      AIRFLOW__API__BASE_URL: "http://data.conviersolutions.com/airflow"
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://api-server:8080/airflow/execution/"
